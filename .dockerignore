@@ -1,3 +1,21 @@
+<# Maven
+target/
+
+# IDE
+.idea/
+.project
+.classpath
+.settings/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+=======
 # Maven
 target/
 
@@ -16,3 +34,4 @@ Thumbs.db
 .git
 .gitignore
 
+>>>>>>> db45c5ada0e1c10d247adf40ec3510fd11903a1b
