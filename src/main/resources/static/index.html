@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commuter Reviews</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    /* Global Reset & Base Styles */
+    :root {
+      --color-primary: #3b82f6; /* Blue 500 */
+      --color-secondary: #10b981; /* Emerald 500 */
+      --color-background: #f9fafb; /* Gray 50 */
+      --color-surface: #ffffff;
+      --color-text-base: #1f2937; /* Gray 800 */
+      --color-text-muted: #6b7280; /* Gray 500 */
+      --color-border: #e5e7eb; /* Gray 200 */
+      --color-star-active: #f59e0b; /* Amber 500 */
+      --color-star-inactive: #d1d5db; /* Gray 300 */
+      --color-error: #ef4444; /* Red 500 */
+      --shadow-default: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --border-radius-default: 8px;
+    }
+
+    /* Dark Theme Styles - Added for the toggle theme button */
+    body.dark-theme {
+        --color-background: #1f2937; /* Gray 800 */
+        --color-surface: #374151; /* Gray 700 */
+        --color-text-base: #f3f4f6; /* Gray 100 */
+        --color-text-muted: #9ca3af; /* Gray 400 */
+        --color-border: #4b5563; /* Gray 600 */
+        --color-star-inactive: #4b5563;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif; /* Using a modern font */
+      background-color: var(--color-background);
+      color: var(--color-text-base);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-top: 0;
+      color: var(--color-primary);
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+
+    /* Layout & Utility */
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 16px; /* Added horizontal padding */
+    }
+
+    .muted {
+      color: var(--color-text-muted);
+      font-size: 0.9rem;
+    }
+
+    .error {
+      color: var(--color-error);
+      font-size: 0.75rem;
+      min-height: 1.25rem; /* Reserve space for error message */
+    }
+
+    /* Header & Navigation */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0;
+    }
+
+    .brand {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--color-primary);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge {
+      background: var(--color-secondary);
+      color: var(--color-surface);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .hero {
+      padding: 10px 0 20px 0;
+      font-size: 1.1rem;
+      font-style: italic;
+    }
+
+    /* Grid Layout */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr 2fr; /* 1/3 for filters, 2/3 for form */
+      }
+    }
+
+    /* Panels (Cards) */
+    .panel {
+      background-color: var(--color-surface);
+      padding: 24px;
+      border-radius: var(--border-radius-default);
+      box-shadow: var(--shadow-default);
+      border: 1px solid var(--color-border);
+    }
+
+    /* Form Styles */
+    .row {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    input[type="number"],
+    input[type="text"],
+    textarea,
+    .select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      box-sizing: border-box;
+      background-color: var(--color-surface);
+      color: var(--color-text-base);
+      transition: border-color 0.2s;
+    }
+
+    input:focus,
+    textarea:focus,
+    .select:focus {
+      border-color: var(--color-primary);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .summary {
+        margin-top: 16px;
+        padding: 12px;
+        border: 1px dashed var(--color-border);
+        border-radius: 6px;
+        font-size: 0.9rem;
+        background-color: var(--color-background);
+    }
+
+    /* Buttons */
+    button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.2s, opacity 0.2s;
+    }
+
+    #submitBtn, #confirmOk {
+      background-color: var(--color-primary);
+      color: white;
+    }
+
+    #submitBtn:hover:not(:disabled), #confirmOk:hover {
+      background-color: #2563eb; /* Blue 600 */
+    }
+
+    .ghost {
+      background-color: transparent;
+      color: var(--color-text-base);
+      border: 1px solid var(--color-border);
+    }
+
+    .ghost:hover:not(:disabled) {
+      background-color: var(--color-background);
+      border-color: var(--color-text-muted);
+    }
+
+    #submitBtn:disabled, .ghost:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .row button:first-child {
+      margin-right: 8px;
+    }
+
+    /* Star Rating */
+    .stars {
+      display: inline-flex;
+      gap: 4px; /* Reduced gap for a tighter look */
+      cursor: pointer;
+    }
+
+    .star {
+      width: 24px; /* Slightly smaller stars */
+      height: 24px;
+      fill: var(--color-star-inactive);
+      transition: fill .15s ease;
+    }
+
+    .star.active {
+      fill: var(--color-star-active);
+    }
+
+    /* Review List Controls */
+    .panel .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap; /* Allow wrapping on smaller screens */
+      margin-bottom: 12px !important; /* Overriding default control margin */
+    }
+
+    .panel .controls label {
+        margin-bottom: 0;
+        font-weight: normal;
+    }
+
+    .panel .controls .select {
+      width: auto;
+      padding: 6px 10px;
+    }
+
+    #pageInfo {
+        min-width: 60px;
+        text-align: center;
+    }
+
+    /* Individual Review Item Styling - Placeholder for dynamic content */
+    #reviews > div {
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        padding: 16px;
+        margin-bottom: 12px;
+        background-color: var(--color-surface);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: var(--color-text-base);
+      color: var(--color-surface);
+      padding: 12px 16px;
+      border-radius: 8px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Snappier transition */
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Skeleton Loading */
+    .skeleton {
+      background: linear-gradient(90deg, var(--color-border), #f7f7f7, var(--color-border));
+      background-size: 200% 100%;
+      animation: shine 1.5s infinite;
+      border-radius: 4px; /* Added border-radius */
+    }
+
+    @keyframes shine { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    /* Empty State */
+    .empty {
+      text-align: center;
+      color: var(--color-text-muted);
+      padding: 30px 0; /* More padding */
+      border: 1px dashed var(--color-border);
+      border-radius: var(--border-radius-default);
+    }
+
+    /* Modal Styling */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: none; /* Controlled by JS */
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+    }
+
+    .modal-backdrop.show {
+        display: flex;
+    }
+
+    .modal {
+        background-color: var(--color-surface);
+        padding: 24px;
+        border-radius: var(--border-radius-default);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        max-width: 400px;
+        width: 90%;
+    }
+
+    .modal h4 {
+        margin-top: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .modal .actions {
+        margin-top: 16px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    /* Footer */
+    .footer {
+      color: var(--color-text-muted);
+      font-size: 0.8rem;
+      margin: 32px 0 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--color-border);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="navbar">
+      <div class="brand">Commuter Reviews</div>
+      <div class="controls">
+        <button id="themeBtn" class="ghost" title="Toggle theme">Toggle Theme</button>
+        <div class="badge">MVP</div>
+      </div>
+    </div>
+    <div class="hero muted">Share your ride experience and help other commuters choose the best routes.</div>
+  <div class="grid">
+    <div class="panel">
+      <h3>Filters</h3>
+      <div class="row">
+        <label>Route ID</label>
+        <input id="routeId" type="number" value="1"/>
+        <div id="routeId-err" class="error"></div>
+      </div>
+      <div class="summary" id="summary"></div>
+    </div>
+
+    <div class="panel">
+      <h3 id="formTitle">Add / Edit Review</h3>
+      <div class="row">
+        <label>Commuter ID</label>
+        <input id="commuterId" type="number" value="1001"/>
+        <div id="commuterId-err" class="error"></div>
+      </div>
+      <div class="row">
+        <label>Rating</label>
+        <div class="stars" id="stars" aria-label="Star rating">
+          <svg class="star" data-value="1" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg class="star" data-value="2" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg class="star" data-value="3" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg class="star" data-value="4" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <svg class="star" data-value="5" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+        </div>
+        <input id="rating" type="number" min="1" max="5" value="5" style="display:none"/>
+        <div id="rating-err" class="error"></div>
+      </div>
+      <div class="row">
+        <label>Title</label>
+        <input id="title"/>
+        <div id="title-err" class="error"></div>
+      </div>
+      <div class="row">
+        <label>Comment</label>
+        <textarea id="comment"></textarea>
+        <div id="comment-err" class="error"></div>
+      </div>
+      <div class="row">
+        <button id="submitBtn">Submit Review</button>
+        <button id="cancelBtn" class="ghost" style="display:none">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:20px;">
+    <h3>Reviews</h3>
+    <div class="controls" style="margin-bottom:8px;">
+      <label>Sort</label>
+      <select id="sortBy" class="select">
+        <option value="newest">Newest</option>
+        <option value="oldest">Oldest</option>
+        <option value="highest">Highest Rating</option>
+        <option value="lowest">Lowest Rating</option>
+      </select>
+      <label>Page size</label>
+      <select id="pageSize" class="select">
+        <option>5</option>
+        <option selected>10</option>
+        <option>20</option>
+      </select>
+      <div style="margin-left:auto"></div>
+      <button id="prevPage" class="ghost">Prev</button>
+      <div class="muted" id="pageInfo">1 / 1</div>
+      <button id="nextPage" class="ghost">Next</button>
+    </div>
+    <div id="reviews"></div>
+    <div id="empty" class="empty" style="display:none">No reviews yet. Be the first to add one!</div>
+  </div>
+  <div class="modal-backdrop" id="confirmModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h4>Delete review?</h4>
+      <div class="muted">This action cannot be undone.</div>
+      <div class="actions">
+        <button id="confirmCancel" class="ghost">Cancel</button>
+        <button id="confirmOk">Delete</button>
+      </div>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div class="footer">© Commuter App</div>
+
+  <script src="/app.js"></script>
+  </div>
+</body>
+</html>
