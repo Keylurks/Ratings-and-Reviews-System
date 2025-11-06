@@ -45,5 +45,3 @@ EXPOSE 8081
 ENV JAVA_OPTS="-XX:+UseG1GC -XX:MaxRAMPercentage=75"
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
-
-db45c5ada0e1c10d247adf40ec3510fd11903a1b
